@@ -2,7 +2,7 @@
 
 A content-based movie recommendation app built with Python, Streamlit, and scikit-learn.
 
-Choose a movie from the catalogue and the application recommends five similar titles by comparing the textual tags associated with each movie.
+Choose a movie from the catalogue and the application recommends five similar titles by comparing the textual tags associated with each movie. Movie poster artwork is retrieved automatically from public metadata sources. No user account, API key, or paid subscription is required.
 
 ## How it works
 
@@ -10,7 +10,7 @@ Choose a movie from the catalogue and the application recommends five similar ti
 2. `CountVectorizer` converts the movie tags into sparse numerical feature vectors.
 3. Cosine similarity measures how closely the selected movie matches the other movies.
 4. The five highest-scoring movies (excluding the selected title) are displayed as recommendations.
-5. Optional poster artwork is retrieved from The Movie Database (TMDb).
+5. Poster artwork is looked up using the public Cinemeta catalogue. If no sufficiently close title match is available there, the app tries the matching Wikipedia film article. Poster lookups are cached for seven days to reduce repeat requests.
 
 The app computes similarities only for the selected movie. It does not create and retain a dense all-pairs similarity matrix, which reduces memory use during deployment.
 
@@ -48,20 +48,17 @@ streamlit run app.py
 4. Select branch `main` and main file path `app.py`.
 5. Deploy the app. Streamlit will provide a shareable URL for the project.
 
-## Optional: enable movie posters
+No Streamlit Secrets are needed.
 
-Recommendations work without a TMDb key. To display poster images, create or use a TMDb API key and add it in the app's **Settings → Secrets** in Streamlit Community Cloud:
+## Poster data sources
 
-```toml
-TMDB_API_KEY = "your_tmdb_api_key"
-```
+- [Cinemeta](https://v3-cinemeta.strem.io) — public movie catalogue and poster URLs, accessed without an API key.
+- [Wikipedia REST API](https://www.mediawiki.org/wiki/API:REST_API/Reference) — fallback film-article search and lead-image thumbnails.
 
-For local development, you can put the same setting in `.streamlit/secrets.toml` (this file is excluded by `.gitignore`) or set the `TMDB_API_KEY` environment variable.
-
-**Security:** Never commit API keys to GitHub. If a key was previously committed to a public repository, revoke or rotate it with the provider before using a replacement in Streamlit Secrets.
+These are third-party services. Poster availability depends on whether the selected movie has a matching entry and image at one of these sources. A placeholder is shown when neither source returns a confident match.
 
 ## Project files
 
-- `app.py` — Streamlit interface and recommendation logic.
+- `app.py` — Streamlit interface, recommendation logic, and poster lookup.
 - `movies.csv` — movie catalogue and text tags used by the recommender.
 - `requirements.txt` — Python dependencies.
