@@ -1,14 +1,16 @@
-# Virtual environment
+# Virtual environments
 myenv/
 venv/
 env/
+.venv/
 
 # Python cache
 __pycache__/
 *.py[cod]
 
-# Environment variables
+# Environment variables and local secrets
 .env
+.streamlit/secrets.toml
 
 # IDE files
 .vscode/
